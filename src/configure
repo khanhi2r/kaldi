@@ -884,7 +884,7 @@ fi
 
 # Define default library roots where known (others may be found by probing).
 case $MATHLIB in
-  MKL) [[ ! $MKLLIBDIR && ! $MKLROOT ]] && MKLROOT=/opt/intel/mkl ;;
+  MKL) [[ ! $MKLLIBDIR && ! $MKLROOT ]] && MKLROOT=/home/khanh/ws/mambaforge/envs/kaldi ;;
   ATLAS) : ${ATLASROOT:=$(rel2abs ../tools/ATLAS_headers/)} ;;
 esac
 
