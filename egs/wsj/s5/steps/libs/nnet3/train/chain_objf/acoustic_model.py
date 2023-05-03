@@ -163,6 +163,11 @@ def train_new_models(dir, iter, srand, num_jobs,
     # than normal minibatch size, and people may get confused thinking it's
     # slower for iteration 0 because of the verbose option.
     verbose_opt = ("--verbose=1" if iter % 20 == 0 and iter > 0 else "")
+
+    import os
+    import json
+    cuda_device_list = json.loads(os.environ["cuda_device_list"])
+
     for job in range(1, num_jobs+1):
 
         # k is a zero-based index that we will derive the other indexes from.
@@ -184,8 +189,11 @@ def train_new_models(dir, iter, srand, num_jobs,
                           if iter > 0 else "") +
                          (" --write-cache={0}/cache.{1}".format(dir, iter + 1)
                           if job == 1 else ""))
+        
+        selected_cuda_device = cuda_device_list[job % num_jobs] # select cuda device based on job
+
         thread = common_lib.background_command(
-            """{command} {train_queue_opt} {dir}/log/train.{iter}.{job}.log \
+            """CUDA_VISIBLE_DEVICES={selected_cuda_device} {command} {train_queue_opt} {dir}/log/train.{iter}.{job}.log \
                     nnet3-chain-train {parallel_train_opts} {verbose_opt} \
                     --apply-deriv-weights={app_deriv_wts} \
                     --l2-regularize={l2} --leaky-hmm-coefficient={leaky} \
@@ -205,6 +213,7 @@ def train_new_models(dir, iter, srand, num_jobs,
                         --srand={srand} ark:- ark:- | nnet3-chain-merge-egs \
                         --minibatch-size={num_chunk_per_mb} ark:- ark:- |" \
                     {dir}/{next_iter}.{job}.raw""".format(
+                        selected_cuda_device=selected_cuda_device,
                         command=run_opts.command,
                         train_queue_opt=run_opts.train_queue_opt,
                         dir=dir, iter=iter, srand=iter + srand,

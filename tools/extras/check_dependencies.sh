@@ -138,7 +138,7 @@ mathlib_missing=false
 case $(uname -m) in
   x86_64)  # Suggest MKL on an Intel64 system (not supported on i?86 hosts).
     # Respect user-supplied MKL_ROOT environment variable.
-    MKL_ROOT="${MKL_ROOT:-/opt/intel/mkl}"
+    MKL_ROOT="${MKL_ROOT:-/home/khanh/ws/mambaforge/envs/kaldi}"
        # Check the well-known mkl.h file location.
     if ! [[ -f "${MKL_ROOT}/include/mkl.h" ]] &&
        # Ubuntu 20+ has an MKL package
